@@ -574,7 +574,7 @@ a {
       transition: none; } }
 
 .resume-item {
-  width: 550px;
+  width: auto;
   height: 330px;
   padding: 30px;
   background: #333;
