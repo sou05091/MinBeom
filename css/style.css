@@ -428,6 +428,7 @@ a {
 
 .single-portfolio {
   margin-bottom: 50px;
+  height: 300px;
   display: block; }
   .single-portfolio .relative {
     margin-bottom: 20px; }
