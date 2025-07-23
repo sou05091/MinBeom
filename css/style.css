@@ -426,7 +426,7 @@ a {
       .filters ul li.active {
         color: #bac964; }
 
-.single-portfolio {
+/* .single-portfolio {
   margin-bottom: 50px;
   height: 300px;
   display: block; }
@@ -439,7 +439,7 @@ a {
     .single-portfolio .p-inner .cat {
       font-size: 12px;
       text-transform: uppercase;
-      color: #cccccc; }
+      color: #cccccc; } */
 
 /*--------- Start Portfolio Area -------------*/
 .portfolio-area .primary-btn {
@@ -547,7 +547,7 @@ a {
   -ms-transform: translate(-50%, -50%);
   text-align: center; }
 
-.single-portfolio:hover .middle {
+/* .single-portfolio:hover .middle {
   opacity: 1; }
 
 .text {
@@ -560,7 +560,7 @@ a {
 .single-portfolio {
   border-radius: 5px; }
   .single-portfolio:hover .thumb .overlay-bg {
-    opacity: .85; }
+    opacity: .85; } */
 
 .thumb .overlay-bg {
   opacity: 0;
@@ -728,3 +728,140 @@ a {
 .letter-spacing {
   letter-spacing: .2rem;
   color: rgba(255, 255, 255, 0.5) !important; }
+
+/* 기존의 포트폴리오 이미지 크기 통일 CSS를 다음으로 교체하세요 */
+
+/* 포트폴리오 이미지 크기 통일 - 수정된 버전 */
+.single-portfolio .thumb {
+    width: 100%;
+    height: 250px !important; /* 고정 높이 설정 */
+    overflow: hidden;
+    position: relative;
+    border-radius: 8px;
+}
+
+.single-portfolio .thumb .image {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* 이미지 비율 유지하면서 컨테이너 채우기 */
+    object-position: center !important; /* 이미지 중앙 정렬 */
+    transition: transform 0.3s ease;
+}
+
+/* 호버 효과 */
+.single-portfolio .thumb:hover .image {
+    transform: scale(1.05);
+}
+
+/* 오버레이 스타일 조정 */
+.single-portfolio .relative .overlay-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+.single-portfolio:hover .thumb .overlay-bg {
+    opacity: 0.85 !important;
+}
+
+/* 미리보기 아이콘 스타일 */
+.single-portfolio .middle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.single-portfolio:hover .middle {
+    opacity: 1 !important;
+}
+
+/* 포트폴리오 카드 전체 높이 조정 */
+.single-portfolio {
+    margin-bottom: 30px;
+    height: auto !important; /* 기존 고정 높이 제거 */
+}
+
+/* 포트폴리오 내용 부분 스타일 개선 */
+.single-portfolio .p-inner {
+    padding: 20px 15px;
+    background: #333 !important; /* 기존 테마에 맞춤 */
+    border-radius: 0 0 8px 8px;
+    text-align: center;
+}
+
+.single-portfolio .p-inner h4 {
+    margin-bottom: 10px;
+    font-size: 18px !important;
+    font-weight: 600;
+    color: #fff !important; /* 기존 테마에 맞춤 */
+}
+
+.single-portfolio .p-inner .links a,
+.single-portfolio .p-inner a {
+    color: #bac964 !important; /* 기존 테마 색상 사용 */
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.single-portfolio .p-inner .links a:hover,
+.single-portfolio .p-inner a:hover {
+    color: #b2c251 !important; /* 기존 테마 호버 색상 */
+    text-decoration: underline;
+}
+
+.single-portfolio .p-inner p {
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin-bottom: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .single-portfolio .thumb {
+        height: 200px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .single-portfolio .thumb {
+        height: 180px !important;
+    }
+}
+
+/* 기존 CSS에 추가 */
+.single-portfolio .p-inner {
+    height: 120px !important; /* 고정 높이 */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.single-portfolio .p-inner h4 {
+    margin: 0 0 10px 0 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* 제목 한 줄로 제한 */
+}
+
+.single-portfolio .p-inner p {
+    margin: 0 !important;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 설명을 3줄로 제한 */
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+}
+
+.single-portfolio .p-inner .links {
+    margin-top: auto; /* 링크를 하단에 고정 */
+}
