@@ -865,3 +865,151 @@ a {
 .single-portfolio .p-inner .links {
     margin-top: auto; /* 링크를 하단에 고정 */
 }
+
+/* Portfolio 전용 로딩 스타일 */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #222, #333, #222);
+    background-size: 400% 400%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 1s ease;
+    animation: gradientShift 3s ease infinite;
+}
+
+.loading.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-text {
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: #bac964;
+    position: relative;
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-text::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #bac964, transparent);
+    animation: lineMove 2s ease-in-out infinite;
+}
+
+.loading-text::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #bac964;
+    opacity: 0.3;
+    animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes lineMove {
+    0%, 100% { transform: translateX(-100%); opacity: 0; }
+    50% { transform: translateX(0%); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes glow {
+    0%, 100% { 
+        text-shadow: 0 0 10px #bac964, 0 0 20px #bac964;
+        transform: scale(1);
+    }
+    50% { 
+        text-shadow: 0 0 20px #bac964, 0 0 30px #bac964, 0 0 40px #bac964;
+        transform: scale(1.02);
+    }
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+    padding: 50px;
+    text-align: center;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .loading-text {
+        font-size: 1.5rem;
+        letter-spacing: 0.15em;
+    }
+    
+    .loading-text::after {
+        bottom: -10px;
+        height: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .loading-text {
+        font-size: 1.2rem;
+        letter-spacing: 0.1em;
+    }
+}
+
+/* Custom Magnetic Cursor */
+.cursor {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    z-index: 10000;
+    mix-blend-mode: difference;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cursor-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+}
+
+.cursor-outline {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cursor.active .cursor-outline {
+    width: 60px;
+    height: 60px;
+    border-color: rgba(255, 255, 255, 0.8);
+}
