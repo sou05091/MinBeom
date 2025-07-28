@@ -1,683 +1,638 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="ko">
 <head>
-	<title>MinBeom Kim Resume</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="contact form example">
-	<link rel="stylesheet" href="css/animate.css">
-	<link rel="stylesheet" href="css/flexslider.css">
-	<link rel="stylesheet" href="fonts/icomoon/style.css">
-	<link rel="stylesheet" href="css/bootstrap.css">
-	<link rel="stylesheet" href="css/style.css">
-	<link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,700" rel="stylesheet">
-	<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-	<!-- Style The Contact Form How Ever You Prefer -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MB Kim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #222;
+            color: #fff;
+            overflow: hidden;
+            cursor: none;
+            position: relative;
+        }
 
+        /* Loading Screen - Portfolio와 동일한 스타일 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #222, #333, #222);
+            background-size: 400% 400%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 1s ease;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .loading.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: #bac964;
+            position: relative;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-text::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #bac964, transparent);
+            animation: lineMove 2s ease-in-out infinite;
+        }
+
+        .loading-text[data-text]::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #bac964;
+            opacity: 0.3;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes lineMove {
+            0%, 100% { transform: translateX(-100%); opacity: 0; }
+            50% { transform: translateX(0%); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { 
+                text-shadow: 0 0 10px #bac964, 0 0 20px #bac964;
+                transform: scale(1);
+            }
+            50% { 
+                text-shadow: 0 0 20px #bac964, 0 0 30px #bac964, 0 0 40px #bac964;
+                transform: scale(1.02);
+            }
+        }
+
+        /* Canvas Background */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        /* Custom Magnetic Cursor - Portfolio와 동일 */
+        .cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cursor-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+        }
+
+        .cursor-outline {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cursor.active .cursor-outline {
+            width: 60px;
+            height: 60px;
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Title Effect - Portfolio 스타일에 맞춤 */
+        .title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 200;
+            letter-spacing: 0.05em;
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .title strong {
+            font-weight: 800;
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Liquid Morphing Buttons - Portfolio 테마 색상 적용 */
+        .liquid-button {
+            position: relative;
+            padding: 20px 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: transparent;
+            border: 2px solid rgba(186, 201, 100, 0.5);
+            border-radius: 50px;
+            cursor: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .liquid-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(186, 201, 100, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .liquid-button:hover {
+            color: #222;
+            background: #bac964;
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 40px rgba(186, 201, 100, 0.5),
+                0 0 80px rgba(186, 201, 100, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .liquid-button:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Liquid blob effect */
+        .liquid-button .blob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #bac964, #b2c251);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: blur(20px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        .liquid-button:hover .blob {
+            transform: translate(-50%, -50%) scale(3);
+        }
+
+        .liquid-button-two {
+            position: relative;
+            padding: 20px 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: transparent;
+            border: 2px solid rgba(186, 201, 100, 0.5);
+            border-radius: 50px;
+            cursor: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .liquid-button-two::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(186, 201, 100, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .liquid-button-two:hover {
+            color: #222;
+            background: #bac964;
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 40px rgba(186, 201, 100, 0.5),
+                0 0 80px rgba(186, 201, 100, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .liquid-button-two:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Liquid blob effect */
+        .liquid-button-two .blob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #bac964, #b2c251);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: blur(20px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        .liquid-button-two:hover .blob {
+            transform: translate(-50%, -50%) scale(3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+
+            .cursor {
+                display: none;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .liquid-button,
+            .liquid-button-two {
+                width: 100%;
+            }
+
+            .loading-text {
+                font-size: 1.5rem;
+                letter-spacing: 0.15em;
+            }
+            
+            .loading-text::after {
+                bottom: -10px;
+                height: 1px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .loading-text {
+                font-size: 1.2rem;
+                letter-spacing: 0.1em;
+            }
+        }
+    </style>
 </head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-text" data-text="LOADING">LOADING</div>
+    </div>
 
-<body data-spy="scroll" data-target="#pb-navbar" data-offset="200">
+    <!-- Canvas for Particle Effect -->
+    <canvas id="particleCanvas"></canvas>
 
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-outline"></div>
+    </div>
 
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="title">
+            <strong>Kim</strong> MinBeom
+        </h1>
+        
+        <div class="button-container">
+            <button class="liquid-button">
+                <span class="blob"></span>
+                Portfolio
+            </button>
+            <button class="liquid-button-two">
+                <span class="blob"></span>
+                Career Summary
+            </button>
+        </div>
+    </div>
 
-	<nav class="navbar navbar-expand-lg site-navbar navbar-light bg-light" id="pb-navbar">
+    <script>
+        // Loading Screen - Portfolio와 동일한 타이밍
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('fade-out');
+            }, 2000); // portfolio와 동일한 2초
+        });
 
-		<div class="container">
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample09"
-				aria-controls="navbarsExample09" aria-expanded="false" aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
 
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
 
-			<div class="collapse navbar-collapse justify-content-md-center" id="navbarsExample09">
-				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link" href="#section-home">Home</a></li>
-					<li class="nav-item"><a class="nav-link" href="#section-portfolio">Portfolio</a></li>
-					<li class="nav-item"><a class="nav-link" href="#section-resume">Resume</a></li>
-					<li class="nav-item"><a class="nav-link" href="#section-about">About</a></li>
-					<li class="nav-item"><a class="nav-link" href="#section-contact">Contact</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
+        // Smooth cursor animation
+        function animateCursor() {
+            const distX = mouseX - cursorX;
+            const distY = mouseY - cursorY;
+            
+            cursorX += distX * 0.1;
+            cursorY += distY * 0.1;
+            
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
 
-	<!--style="background-image: url(images/민범.jpg);"-->
+        // Cursor hover effects
+        const interactiveElements = document.querySelectorAll('button');
+        
+        interactiveElements.forEach(elem => {
+            elem.addEventListener('mouseenter', () => {
+                cursor.classList.add('active');
+            });
+            
+            elem.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+            });
+        });
 
-	<section class="site-hero" style="background-image: url(images/배경.jpg);" id="section-home"
-		data-stellar-background-ratio="0.5">
-		<section>
-			<script src='js/snow2.js'></script>
-			<script>
-				var sf = new Snowflakes({
-					color: "#ffffff", // 색상
-					count: 20, // 갯수
-					minOpacity: 0.6, // 최소 투명도 0: 투명 | 1: 불투명
-					maxOpacity: 0.9 // 최대 투명도
-				});
-			</script>
-		</section>
-		<div class="container">
-			<div class="row intro-text align-items-center justify-content-center">
+        // Particle System with portfolio theme colors
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-				<!--<div class='profile'>
-					<img class = 'profile2' src="p6.jpg" align = "middle" alt="">
-				</div>-->
-				<div class="section-heading text-center">
-					<a class="portfolio-hover" data-toggle="modal" href="#portfolioModal1">
-						<h1><strong>Kim </strong>MinBeom</h1>
-					</a>
-					<a class="portfolio-hover" data-toggle="modal" href="#portfolioModal1">Portfolio</a>
-				</div>
-			</div>
-		</div>
-	</section>
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.3 + 0.2;
+                this.color = Math.random() > 0.5 ? '#bac964' : '#b2c251';
+            }
 
-	<!--카카오톡 배경이미지 느낌 (삭제) -->
-	<!--<div class="portfolio-modal modal fade" id="portfolioModal1" tabindex="-1" role="dialog" aria-hidden="true">
-			<div class="modal-dialog">
-					<div class="modal-content" style="background-image: url(images/카톡배경.jpg); width: 500px; height: 850px;">
-							<div class="close-modal" data-dismiss="modal"><img src="images/close.png" alt="Close modal" /></div>
-							<div class="kakaotalk4">
-								<h2>1413 - 선을그어주던가</h2>
-							<audio autoplay controls>
-								<source src="audio/선을그어주던가.mp3" type="audio/mp3"> -> 노래재생
-							</audio>
-							</div>
-							<div class='kprofile'>
-								<img class = 'kprofile2' src="profile.jpg" align = "middle" alt="">
-							</div>
-							<div class="kakaotalk3">
-							<strong><h1>김민범</h1></strong>
-						</div>
-						<section>
-							<div class="kakaotalk">
-								<a href="https://open.kakao.com/o/swJ6KXRc">
-							<img class="kakaotalk2" src="images/카카오톡.jpg" alt=""></a>
-							</div>
-							<div class="gmail">
-								<a href="mailto: sou05094@gmail.com">
-								<img class="gmail2" src="images/지메일.png" alt=""></a>
-							</div>
-							<a href="#"></a>
-						</section>
-						</div>
-				</div>
-	</div>-->
-	<style>
-		.single-portfolio .thumb .image {
-			max-width: 100%;
-			height: auto;
-		}
-	</style>
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
 
-	<section class="site-section" id="section-portfolio">
-		<div class="container">
-			<div class="row">
-				<div class="section-heading text-center col-md-12">
-					<h2>Featured <strong>Portfolio</strong></h2>
-				</div>
-			</div>
-			<div class="filters">
-				<ul>
-					<li class="active" data-filter="*">ALL</li>
-					<li data-filter=".packaging">STUDY</li>
-					<li data-filter=".mockup">AI</li>
-					<li data-filter=".typography">WEB</li>
-				</ul>
-			</div>
+                // Mouse repelling effect
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDistance = 150;
 
-			<div class="filters-content">
-				<div class="row grid">
-					<div class="single-portfolio col-sm-4 all mockup">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/osteo.png" alt="">
-							</div>
-							<a href="images/osteo.png" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>VCF Detection in CT Project</h4>
-							<div class="links">
-								<a href="https://claripi.com/clari-osteo/" target="_blank">
-									<p>Osteo Product R&D: Bone Density Measurement, VCF Detection, and Sarcopenia Analysis</p>
-								</a>
-							</div>
-						</div>
-					</div>
+                if (distance < maxDistance) {
+                    const force = (maxDistance - distance) / maxDistance;
+                    const forceX = (dx / distance) * force * 5;
+                    const forceY = (dy / distance) * force * 5;
+                    this.x += forceX;
+                    this.y += forceY;
+                }
 
-					<div class="single-portfolio col-sm-4 all mockup">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/vcf.png" alt="">
-							</div>
-							<a href="images/vcf.png" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>VCF Detection in CT Project</h4>
-							<div class="links">
-								<a href="https://doi.org/10.3390/bioengineering12010064" target="_blank">
-									<p>Published Paper: AI Model for Vertebral Fracture Detection</p>
-								</a>
-							</div>
-						</div>
-					</div>
-					
-					<div class="single-portfolio col-sm-4 all mockup">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/rib3.png" alt="">
-							</div>
-							<a href="images/rib3.png" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>2024 KCR Oral Presentation</h4>
-							<!---<div class="cat">Mockup</div>-->
-							<!-- <a href="https://github.com/sou05091/MainProject_LicensePlate" target="_">
-								License Plate Recognition AI Model Development
-							</a> -->
-							<a href="./pdf/SS-2024-1515_Minbeom Kim.pdf" target="_">
-								<p>Oral presentation report on rib fracture detection using detection and classification models in CT data</p>
-							</a>
-						</div>
-					</div>
+                // Wrap around edges
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
 
-					<div class="single-portfolio col-sm-4 all mockup">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/bbox_maker.png" alt="">
-							</div>
-							<a href="images/bbox_maker.png" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>Bounding Box Maker</h4>
-							<a href="https://github.com/sou05091/Private-Bounding-Box-Maker" target="_">
-								<p>A user-friendly tool designed to create bounding box labels without the need for web-based labeling work</p>
-							</a>
-						</div>
-					</div>
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
 
-					<div class="single-portfolio col-sm-4 all mockup">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/License_Plate.jpg" alt="">
-							</div>
-							<a href="images/License_Plate.jpg" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>License Plate Recognition Project</h4>
-							<!---<div class="cat">Mockup</div>-->
-							<!-- <a href="https://github.com/sou05091/MainProject_LicensePlate" target="_">
-								License Plate Recognition AI Model Development
-							</a> -->
-							<a href="./pdf/pdf.html" target="_">
-								<p>Corporate Project Report: AI-Based Vehicle License Plate Recognition System for Construction Sites</p>
-							</a>
-						</div>
-					</div>
-					<div class="single-portfolio col-sm-4 all mockup">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/Ginseng.jpg" alt="">
-							</div>
-							<a href="images/Ginseng.jpg" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>Busan ICT Hakaton</h4>
-							<!---<div class="cat">Mockup</div>-->
-							<a href="https://github.com/sou05091/2023-ICTBusanHakaton" target="_">
-								<p>Ginseng Part Classification AI Model Development</p>
-							</a>
-						</div>
-					</div>
-					<div class="single-portfolio col-sm-4 all typography">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/Restaurants.png" alt="">
-							</div>
-							<a href="images/Restaurants.png" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>Restaurants Location Search Website</h4>
-							<!---<div class="cat">Packaging</div>-->
-							<a href="https://github.com/JIeunhuh/K3MiniProject" target="_">
-								<p>Nationwide Exemplary Restaurants Location Search</p>
-							</a>
-						</div>
-					</div>
-					<!--<div class="single-portfolio col-sm-4 all packaging">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/alg_study.jpg" alt="">
-							</div>
-							<a href="images/p1.jpg" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>Algorithm Study</h4>
-							# <div class="cat">Mockup</div>
-							# <a href="https://sameo-interior.vercel.app/index.html" target="_">
-							<a href="https://saber-orbit-a51.notion.site/9d3eaea532ef4397b56d86495ba9cf4d?v=7cd5474e08e44c959bbaa1003f4d52ab&pvs=4" target="_">
-								<p>Algorithm Study with Notion</p>
-							</a>
-						</div>
+        // Create particles
+        const particles = [];
+        const particleCount = 150;
 
-					</div>-->
-					<div class="single-portfolio col-sm-4 all packaging">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/AI.jpg" alt="">
-							</div>
-							<a href="images/AI.jpg" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>Machine Learning Study</h4>
-							<!---<div class="cat">Mockup</div>-->
-							<a href="https://midi-mind-784.notion.site/Machine-Learning-db86d40edc164a97af0ac2b3b054b2ef?pvs=4"
-								target="_">
-								<p>Machine Learning Study with Notion</p>
-							</a>
-						</div>
-					</div>
-					<div class="single-portfolio col-sm-4 all packaging">
-						<div class="relative">
-							<div class="thumb">
-								<div class="overlay overlay-bg"></div>
-								<img class="image img-fluid" src="images/GitHub.jpg" alt="">
-							</div>
-							<a href="images/GitHub.jpg" class="img-pop-up">
-								<div class="middle">
-									<div class="text align-self-center d-flex"><img src="images/preview.png" alt="">
-									</div>
-								</div>
-							</a>
-						</div>
-						<div class="p-inner">
-							<h4>GitHub</h4>
-							<a href="https://github.com/sou05091" target="_">
-								<p>Visiting my GitHub Site</p>
-							</a>
-						</div>
-					</div>
-					<div>
-						<p> </p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
 
+        // Connect particles with lines
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-	<section class="site-section " id="section-resume">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 mb-5">
-					<div class="section-heading text-center">
-						<h2>My <strong>Resume</strong></h2>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<h2 class="mb-5">Experience</h2>
-					<div class="resume-item mb-4">
-						<div>
-							<h2><strong>Medical AI Company</strong></h2>
-						</div>
-						<p><h3>Associate - R&D</h3></p>
-						<p><h5>AI-based product development and research</h5></p>
-						<p><h5>Medical image processing</h5></p>
-						<p><h5>Product optimization and maintenance</h5></p>
-						<p><h5></h5></p>
-						<p><h5></h5></p>
-						<span class="date"><span class="icon-calendar"></span> November 2023 - Present</span>
-					</div>					
-					<div class="resume-item mb-4">
-						<div>
-							<h2><strong>Implant Company</strong></h2>
-						</div>
-						<p><h3>Associate - R&D</h3></p>
-						<p><h5>New Product Regulatory Documentation</h5></p>
-						<p><h5>Reverse Engineering Analysis</h5></p>
-						<p><h5>Product Tolerance Optimization</h5></p>
-						<p><h5>3D Modeling & CAD Development</h5></p>
-						<span class="date"><span class="icon-calendar"></span> April 2022 - December 2022</span>
-					</div>
-					<div class="resume-item mb-4">
-						<div>
-							<h2><strong>Implant Company</strong></h2>
-						</div>
-						<p><h3>Intern - CAM Department</h3></p>
-						<p><h5>Implant Abutment Computer Aided Manufacturing</h5></p>
-						<p><h5>Abutment 3D Modeling</h5></p>
-						<p><h5>One-year international work experience in Irvine, CA</h5></p>
-						<span class="date"><span class="icon-calendar"></span> April 2021 - April 2022</span>
-						<!-- <p><a href="#" class="site-link">Learn More <i class="icon-chevron-right"></i></a></p> -->
-					</div>
-				</div>
+                    if (distance < 100) {
+                        ctx.save();
+                        ctx.globalAlpha = 0.05 * (1 - distance / 100);
+                        ctx.strokeStyle = '#bac964';
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            }
+        }
 
-				<div class="col-md-6">
-					<h2 class="mb-5">Education</h2>
-					<div class="resume-item mb-4">
-						<div>
-							<h2><strong>Pusan National University</strong></h2>
-						</div>
-						<p><h3>K-Digital-2023-3</h3></p>
-						<p><h5>AI Course Completion</h5></p>
-						<p><h5>Projects using TensorFlow, PyTorch, and Flask</h5></p>
-						<p><h5>Fundamental Machine Learning knowledge acquisition</h5></p>
-						<p><h5>Basic learning of React, Spring Boot, and MySQL</h5></p>
-						<span class="date"><span class="icon-calendar"></span> April 2023 - October 2023</span>
-					</div>
-					<div class="resume-item mb-4">
-						<div>
-							<h2><strong>Kyungsung University</strong></h2>
-						</div>
-						<p><h3>Advanced Materials Engineering</h3></p>
-						<p><h5>Bachelor of Engineering in Advanced Materials Engineering</h5></p>
-						<p><h5>Specialization in metal materials, polymers, and semiconductors</h5></p>
-						<p><h5>Self-taught programming as a personal interest</h5></p>
-						<span class="date"><span class="icon-calendar"></span> March 2017 - March 2021</span>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section> <!-- .section -->
+        // Animation loop
+        // function animate() {
+        //     ctx.fillStyle = 'rgba(34, 34, 34, 0.05)';
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	<section class="site-section" id="section-about">
-		<div class="container">
-			<div class="row mb-5 align-items-center">
-				<div class="col-lg-7 pr-lg-5 mb-5 mb-lg-0">
-					<img src="images/1727947434087-1.jpg" alt="Image placeholder" class="img-fluid">
-					<!-- <iframe width="480" height="315" src="https://www.youtube.com/embed/qN374WcJGT8" frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-						allowfullscreen></iframe> -->
-				</div>
-				<div class="col-lg-5 pl-lg-5">
-					<div class="section-heading">
-						<h2>About <strong>Me</strong></h2>
-					</div>
-					<p>
-					<h5>
-						Medical AI Engineer with 2+ years of experience
-					</h5>
-					</p>
-					<p class="mb-5  ">
-						<h5 class="mb-5">
-							Currently serving as a Medical AI Engineer at ClariPi, where I specialize in developing cutting-edge AI solutions for healthcare applications. 
-							I am dedicated to creating AI algorithms and models that advance medical diagnostics and improve patient outcomes.
-						</h5>
-					</p>
+        //     particles.forEach(particle => {
+        //         particle.update();
+        //         particle.draw();
+        //     });
 
-					<p>
-					<h5><a href="#section-contact" class="btn btn-primary px-4 py-2 btn-sm smoothscroll">Contact</a>
-					</h5>
-					<!---<a href="#" class="btn btn-secondary px-4 py-2 btn-sm">Download CV</a>-->
-					</p>
-				</div>
-			</div>
-		</div>
-	</section>
+        //     connectParticles();
+        //     requestAnimationFrame(animate);
+        // }
+        // Animation loop
+        
+        function animate() {
+            // 완전히 캔버스를 지우기
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 배경색 설정
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	<section class="site-section pb-0" id="section-services">
-		<div class="container">
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
 
-			<div class="row mb-4">
-				<div class="col-md-12">
-					<div class="section-heading text-center">
-						<h2>My <strong>Skills</strong></h2>
-					</div>
-				</div>
-			</div>
-			<div class="row">
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
 
-				<div class="col-md-6 col-lg-4 text-center mb-5">
-					<div class="site-service-item site-animate" data-animate-effect="fadeIn">
-						<span class="icon">
-							<span class="icon-browser2"></span>
-						</span>
-						<h3 class="mb-4">AI Model Development</h3>
-						<h5>
-							Extensive experience in developing various Classification, Detection, and Segmentation models utilizing TensorFlow and PyTorch frameworks
-						</h5>
-						<p><a href="https://github.com/sou05091/" class="site-link">Learn More <i class="icon-chevron-right"></i></a></p>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 text-center mb-5">
-					<div class="site-service-item site-animate" data-animate-effect="fadeIn">
-						<span class="icon">
-							<span class="icon-presentation"></span>
-						</span>
-						<h3 class="mb-4">Medical Image Processing</h3>
-						<h5>Conducted research and analysis on diverse medical imaging data, implementing advanced processing techniques for healthcare applications</h5>
-						<p><a href="https://github.com/sou05091/" class="site-link">Learn More <i class="icon-chevron-right"></i></a></p>
-					</div>
-				</div>
-				<div class="col-md-6 col-lg-4 text-center mb-5">
-					<div class="site-service-item site-animate" data-animate-effect="fadeIn">
-						<span class="icon">
-							<span class="icon-browser2"></span>
-						</span>
-						<h3 class="mb-4">Core System Development</h3>
-						<h5>Successfully developed and deployed core systems in hospital environments, with hands-on experience in product installation and implementation</h5>
-						<p><a href="https://github.com/sou05091/" class="site-link">Learn More <i class="icon-chevron-right"></i></a></p>
-					</div>
-				</div>
+        animate();
 
+        // Resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
 
+        // Button click effects
+        document.querySelectorAll('.liquid-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.background = 'rgba(186, 201, 100, 0.5)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.pointerEvents = 'none';
+                
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = (e.clientX - rect.left) + 'px';
+                ripple.style.top = (e.clientY - rect.top) + 'px';
+                
+                this.appendChild(ripple);
+                
+                ripple.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+                    { transform: 'translate(-50%, -50%) scale(20)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => ripple.remove();
+                
+                // Navigate to portfolio
+                setTimeout(() => {
+                    window.location.href = './portfolio.html';
+                }, 300);
+            });
+        });
 
-			</div>
-		</div>
-	</section>
-
-	<!-- <section class="site-section" id="section-blog">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 mb-5">
-					<div class="section-heading text-center">
-						<h2> <strong> </strong></h2>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="row mb-5 align-items-center">
-					<div class="col-lg-7 pr-lg-5 mb-5 mb-lg-0">
-						<iframe width="560" height="315" src="https://www.youtube.com/embed/AQIuP4zPVEQ" frameborder="0"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-							allowfullscreen></iframe>
-					</div>
-					<div class="col-lg-5 pl-lg-5">
-						<div class="section-heading">
-							<h2>1 Min <strong>Vlog</strong></h2>
-						</div>
-						<p class="lead">
-						<h5>The video was edited using Viva Video.</h5>
-						</p>
-						<p class="mb-5  ">
-						<h5>The video length was about 7 hours in total, and this was reduced to 1 minute. It took about
-							3 hours to edit. After this, I plan to continue editing YouTube by filming everyday videos.
-						</h5>
-						</p>
-
-						<p>
-							<a href="#section-contact" class="btn btn-primary px-4 py-2 btn-sm smoothscroll">Hire Me</a>
-							-<a href="#" class="btn btn-secondary px-4 py-2 btn-sm">Download CV</a>
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section> -->
-
-	<footer class="site-footer">
-		<div class="container">
-
-
-			<div class="row mb-5">
-				<div class="col-md-12 text-center">
-					<!--<p>
-						<a href="#" class="social-item"><span class="icon-facebook2"></span></a>
-						<a href="#" class="social-item"><span class="icon-twitter"></span></a>
-						<a href="#" class="social-item"><span class="icon-instagram2"></span></a>
-						<a href="#" class="social-item"><span class="icon-linkedin2"></span></a>
-						<a href="#" class="social-item"><span class="icon-vimeo"></span></a>
-					</p>-->
-				</div>
-			</div>
-
-		</div>
-	</footer>
-
-	<section class="site-section" id="section-contact">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12 mb-5">
-					<!--	<h2 class="content-head is-center">Contact Us!</h2>-->
-					<!--<div class="section-heading text-center">
-						<h2>Get <strong>In Touch</strong></h2>
-						<aside>
-							<p>
-								You can <em>contact me</em> anytime!
-							</p>
-							<p>
-								Please use the <b><em>Contact Form</em></b>
-								to send me a message.
-							</p>
-						</aside>
-					</div>-->
-					<script>src = 'js/Mail.js' ></script>
-					<!-- change the form action to your script url -->
-					<div class="section-heading text-center">
-						<h2>Get <strong>In Touch</strong></h2>
-						<aside>
-							<p>
-								You can <em>contact me</em> anytime!
-							</p>
-						</aside>
-					</div>
-					<form class="gform pure-form pure-form-stacked" method="POST" data-email="sou05094@gmail.com"
-						action="https://script.google.com/macros/s/AKfycbwgq-VOPtBXqL3Zz060NYhrhVLlcGiQvvVpVxx3RgKWw8H92lQrVjBNJGtA_rQx4kQ/exec">
-
-						<div class="form-elements">
-							<fieldset class="pure-group">
-								<label for="name">Name: </label>
-								<input id="name" name="name" placeholder="name" />
-							</fieldset>
-
-							<fieldset class="pure-group">
-								<label for="message">Message: </label>
-								<textarea id="message" name="message" rows="10"
-									placeholder="Tell me what's on your mind..."></textarea>
-							</fieldset>
-
-							<fieldset class="pure-group">
-								<label for="email"><em>Your</em> Email Address:</label>
-								<input id="email" name="email" type="email" value="" required
-									placeholder="your.name@email.com" />
-							</fieldset>
-
-							<div class="section-heading text-center">
-								<script>
-										function btn() {
-											Swal.fire({
-												icon: 'success',
-												title: 'Thanks for contacting!',
-												text: 'I will get back to you soon!',
-											})
-										}
-
-								</script>
-								<button class="btn btn-primary px-4 py-2 btn-sm button-success"
-									onclick="javascript:btn()">
-									<i class="fa fa-paper-plane"></i>&nbsp;Send
-								</button>
-							</div>
-
-							<!-- Customise the Thankyou Message People See when they submit the form: -->
-						</div>
-
-					</form>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<script src="js/vendor/jquery.min.js">IDBCursor</script>
-	<script src="js/vendor/jquery-migrate-3.0.1.min.js"></script>
-	<script src="js/vendor/popper.min.js"></script>
-	<script src="js/vendor/bootstrap.min.js"></script>
-
-	<script src="js/vendor/jquery.easing.1.3.js"></script>
-
-	<script src="js/vendor/jquery.stellar.min.js"></script>
-	<script src="js/vendor/jquery.waypoints.min.js"></script>
-
-	<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
-	<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
-	<script data-cfasync="false" src="form-submission-handler.js"></script>
-	<script src="js/custom.js"></script>
-	<script src="js/snow.js"></script>
-	<script src="js/Mail.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-	<!-- Google Map -->
-	<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-	<script src="js/google-map.js"></script> -->
-
+        document.querySelectorAll('.liquid-button-two').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.background = 'rgba(186, 201, 100, 0.5)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.pointerEvents = 'none';
+                
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = (e.clientX - rect.left) + 'px';
+                ripple.style.top = (e.clientY - rect.top) + 'px';
+                
+                this.appendChild(ripple);
+                
+                ripple.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+                    { transform: 'translate(-50%, -50%) scale(20)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => ripple.remove();
+                
+                // Navigate to career summary
+                setTimeout(() => {
+                    window.location.href = './page_not_found.html';
+                }, 300);
+            });
+        });
+    </script>
 </body>
-
 </html>
