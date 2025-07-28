@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MB Kim</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #222;
+            color: #fff;
+            overflow: hidden;
+            cursor: none;
+            position: relative;
+        }
+
+        /* Loading Screen - Portfolio와 동일한 스타일 */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #222, #333, #222);
+            background-size: 400% 400%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 1s ease;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        .loading.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            color: #bac964;
+            position: relative;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-text::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #bac964, transparent);
+            animation: lineMove 2s ease-in-out infinite;
+        }
+
+        .loading-text[data-text]::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #bac964;
+            opacity: 0.3;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes lineMove {
+            0%, 100% { transform: translateX(-100%); opacity: 0; }
+            50% { transform: translateX(0%); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { 
+                text-shadow: 0 0 10px #bac964, 0 0 20px #bac964;
+                transform: scale(1);
+            }
+            50% { 
+                text-shadow: 0 0 20px #bac964, 0 0 30px #bac964, 0 0 40px #bac964;
+                transform: scale(1.02);
+            }
+        }
+
+        /* Canvas Background */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        /* Custom Magnetic Cursor - Portfolio와 동일 */
+        .cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cursor-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+        }
+
+        .cursor-outline {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .cursor.active .cursor-outline {
+            width: 60px;
+            height: 60px;
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Title Effect - Portfolio 스타일에 맞춤 */
+        .title {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-weight: 200;
+            letter-spacing: 0.05em;
+            margin-bottom: 60px;
+            text-align: center;
+            position: relative;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        .title strong {
+            font-weight: 800;
+        }
+
+        /* Button Container */
+        .button-container {
+            display: flex;
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Liquid Morphing Buttons - Portfolio 테마 색상 적용 */
+        .liquid-button {
+            position: relative;
+            padding: 20px 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: transparent;
+            border: 2px solid rgba(186, 201, 100, 0.5);
+            border-radius: 50px;
+            cursor: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .liquid-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(186, 201, 100, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .liquid-button:hover {
+            color: #222;
+            background: #bac964;
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 40px rgba(186, 201, 100, 0.5),
+                0 0 80px rgba(186, 201, 100, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .liquid-button:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Liquid blob effect */
+        .liquid-button .blob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #bac964, #b2c251);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: blur(20px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        .liquid-button:hover .blob {
+            transform: translate(-50%, -50%) scale(3);
+        }
+
+        .liquid-button-two {
+            position: relative;
+            padding: 20px 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #fff;
+            background: transparent;
+            border: 2px solid rgba(186, 201, 100, 0.5);
+            border-radius: 50px;
+            cursor: none;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        .liquid-button-two::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(186, 201, 100, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .liquid-button-two:hover {
+            color: #222;
+            background: #bac964;
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 40px rgba(186, 201, 100, 0.5),
+                0 0 80px rgba(186, 201, 100, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .liquid-button-two:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Liquid blob effect */
+        .liquid-button-two .blob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #bac964, #b2c251);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            filter: blur(20px);
+            opacity: 0.7;
+            z-index: -1;
+        }
+
+        .liquid-button-two:hover .blob {
+            transform: translate(-50%, -50%) scale(3);
+        }
+
+        .error-description {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            margin-bottom: 50px;
+            opacity: 0.7;
+            max-width: 600px;
+            line-height: 1.6;
+            animation: fadeInUp 1s ease-out 0.8s both;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                cursor: auto;
+            }
+
+            .cursor {
+                display: none;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 20px;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .liquid-button,
+            .liquid-button-two {
+                width: 100%;
+            }
+
+            .loading-text {
+                font-size: 1.5rem;
+                letter-spacing: 0.15em;
+            }
+            
+            .loading-text::after {
+                bottom: -10px;
+                height: 1px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .loading-text {
+                font-size: 1.2rem;
+                letter-spacing: 0.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-text" data-text="LOADING">LOADING</div>
+    </div>
+
+    <!-- Canvas for Particle Effect -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-outline"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="title">
+            <strong>404</strong> Not Found
+        </h1>
+        <p class="error-description">
+            현재 개발 중인 페이지입니다. Portfolio 페이지를 확인해 주세요.
+        </p>
+        <div class="button-container">
+            <button class="liquid-button">
+                <span class="blob"></span>
+                이전 페이지로 돌아가기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Loading Screen - Portfolio와 동일한 타이밍
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('fade-out');
+            }, 2000); // portfolio와 동일한 2초
+        });
+
+        // Custom Cursor
+        const cursor = document.getElementById('cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Smooth cursor animation
+        function animateCursor() {
+            const distX = mouseX - cursorX;
+            const distY = mouseY - cursorY;
+            
+            cursorX += distX * 0.1;
+            cursorY += distY * 0.1;
+            
+            cursor.style.left = cursorX + 'px';
+            cursor.style.top = cursorY + 'px';
+            
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cursor hover effects
+        const interactiveElements = document.querySelectorAll('button');
+        
+        interactiveElements.forEach(elem => {
+            elem.addEventListener('mouseenter', () => {
+                cursor.classList.add('active');
+            });
+            
+            elem.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+            });
+        });
+
+        // Particle System with portfolio theme colors
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.3 + 0.2;
+                this.color = Math.random() > 0.5 ? '#bac964' : '#b2c251';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Mouse repelling effect
+                const dx = this.x - mouseX;
+                const dy = this.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const maxDistance = 150;
+
+                if (distance < maxDistance) {
+                    const force = (maxDistance - distance) / maxDistance;
+                    const forceX = (dx / distance) * force * 5;
+                    const forceY = (dy / distance) * force * 5;
+                    this.x += forceX;
+                    this.y += forceY;
+                }
+
+                // Wrap around edges
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Create particles
+        const particles = [];
+        const particleCount = 150;
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        // Connect particles with lines
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 100) {
+                        ctx.save();
+                        ctx.globalAlpha = 0.05 * (1 - distance / 100);
+                        ctx.strokeStyle = '#bac964';
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            // 완전히 캔버스를 지우기
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 배경색 설정
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Button click effects
+        document.querySelectorAll('.liquid-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.background = 'rgba(186, 201, 100, 0.5)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.pointerEvents = 'none';
+                
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = (e.clientX - rect.left) + 'px';
+                ripple.style.top = (e.clientY - rect.top) + 'px';
+                
+                this.appendChild(ripple);
+                
+                ripple.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+                    { transform: 'translate(-50%, -50%) scale(20)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => ripple.remove();
+                
+                // Navigate to portfolio
+                setTimeout(() => {
+                    window.location.href = './index.html';
+                }, 300);
+            });
+        });
+
+        document.querySelectorAll('.liquid-button-two').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Ripple effect
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.width = '20px';
+                ripple.style.height = '20px';
+                ripple.style.background = 'rgba(186, 201, 100, 0.5)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.transform = 'translate(-50%, -50%)';
+                ripple.style.pointerEvents = 'none';
+                
+                const rect = this.getBoundingClientRect();
+                ripple.style.left = (e.clientX - rect.left) + 'px';
+                ripple.style.top = (e.clientY - rect.top) + 'px';
+                
+                this.appendChild(ripple);
+                
+                ripple.animate([
+                    { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+                    { transform: 'translate(-50%, -50%) scale(20)', opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => ripple.remove();
+                
+                // Navigate to career summary
+                setTimeout(() => {
+                    window.location.href = './page_not_found.html';
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>
